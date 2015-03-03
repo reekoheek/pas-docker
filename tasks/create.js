@@ -133,23 +133,21 @@ var createTask = module.exports = function() {
                     });
                 }
 
-                var promises = [];
-
-                for(var i = 0; i < containerConf.scale; i++) {
-                    opts.name = containerConf.prefixName + i;
-                    this.report('message', '    | %s: creating %s', containerConf.name, opts.name);
-                    promises.push(Promise.denodeify(docker.createContainer).bind(docker)(opts));
-                }
 
                 promise = promise.then(function() {
+                    var promises = [];
+
+                    for(var i = 0; i < containerConf.scale; i++) {
+                        opts.name = containerConf.prefixName + i;
+                        this.report('message', '    | %s: creating %s', containerConf.name, opts.name);
+                        promises.push(Promise.denodeify(docker.createContainer).bind(docker)(opts));
+                    }
+
                     return Promise.all(promises);
-                });
+                }.bind(this));
             }.bind(this));
 
-            return promise
-                .then(function() {
-                    // process.exit();
-                });
+            return promise;
         }.bind(this));
 };
 
