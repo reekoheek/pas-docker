@@ -18,7 +18,7 @@ var psTask = module.exports = function() {
                     Image: container.info.Image,
                     Status: container.info.Status,
                 };
-                this.report('header', '%s', container.name);
+                this.report('header', '%s: %s', container.manifest.name, container.name);
                 this.report('header', '-----------------------------------');
                 this.report('data', data);
                 this.report('header', '');

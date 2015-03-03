@@ -35,7 +35,7 @@ var topTask = module.exports = function() {
                     data.push(row);
                 });
 
-                this.report('header', '%s', top.container.name);
+                this.report('header', '%s: %s', top.container.manifest.name, top.container.name);
                 this.report('header', '-----------------------------------');
                 this.report('data', data);
                 this.report('header', '');
