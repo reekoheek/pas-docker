@@ -1,7 +1,7 @@
 var docker = require('../lib/docker')(),
     Promise = require('promise');
 
-module.exports = function() {
+var psTask = module.exports = function() {
     'use strict';
 
     var task = this.require('task');
@@ -25,3 +25,5 @@ module.exports = function() {
             }.bind(this));
         }.bind(this));
 };
+
+psTask.description = 'Show all container processes';

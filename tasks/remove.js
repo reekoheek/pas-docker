@@ -1,12 +1,12 @@
 var Promise = require('promise'),
     docker = require('../lib/docker')();
 
-module.exports = function() {
+var removeTask = module.exports = function() {
     'use strict';
 
     var packageName = docker.packageManifest.name;
 
-    this.report('message', '[%s] removing package containers', packageName);
+    this.report('message', '[%s] removing containers', packageName);
 
     return docker.findPackageContainers()
         .then(function(containers) {
@@ -15,7 +15,7 @@ module.exports = function() {
 
             containers.forEach(function(container) {
 
-                this.report('message', '    | removing %s <-> %s', container.manifest.name, container.name);
+                this.report('message', '    | %s: removing %s', container.manifest.name, container.name);
 
                 var promise = Promise.denodeify(container.inspect).bind(container)()
                     .then(function(data) {
@@ -35,3 +35,5 @@ module.exports = function() {
 
         }.bind(this));
 };
+
+removeTask.description = 'Remove all package containers';

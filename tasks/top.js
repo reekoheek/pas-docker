@@ -1,7 +1,7 @@
 var docker = require('../lib/docker')(),
     Promise = require('promise');
 
-module.exports = function() {
+var topTask = module.exports = function() {
     'use strict';
 
     var task = this.require('task');
@@ -44,3 +44,5 @@ module.exports = function() {
             // noop
         });
 };
+
+topTask.description = 'Show all contained processes';

@@ -1,7 +1,7 @@
 var docker = require('../lib/docker')(),
     Promise = require('promise');
 
-module.exports = function() {
+var upTask = module.exports = function() {
     'use strict';
 
     var task = this.require('task');
@@ -11,3 +11,5 @@ module.exports = function() {
             return task({_:['docker:start']});
         });
 };
+
+upTask.description = 'Stop all package containers';
