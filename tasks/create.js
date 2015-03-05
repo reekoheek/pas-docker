@@ -35,6 +35,7 @@ var createTask = module.exports = function() {
     'use strict';
 
     var task = this.require('task');
+    var config = this.require('config')();
 
     return task({_:['docker:build']})
         .then(function() {
@@ -107,7 +108,6 @@ var createTask = module.exports = function() {
 
                 if (containerConf.volumesFrom) {
                     var volumesFrom = opts.HostConfig.VolumesFrom = opts.HostConfig.VolumesFrom || [];
-
                     containerConf.volumesFrom.forEach(function(c) {
                         var splitted = c.split(':');
                         var containerName = splitted[0];
@@ -131,6 +131,9 @@ var createTask = module.exports = function() {
 
                         binds.push(origin + ':' + destination);
                     });
+
+                    // FIXME this is ugly hack to include pas home here
+                    binds.push(config.home + ':' + config.home);
                 }
 
 
