@@ -2,6 +2,18 @@ var Promise = require('promise'),
     tar = require('tar-fs'),
     docker = require('../lib/docker')();
 
+var escapeSpecialChars = function(s) {
+    return JSON.stringify(s.toString())
+        .replace(/\\n/g, "\\n")
+        .replace(/\\'/g, "\\'")
+        .replace(/\\"/g, '\\"')
+        .replace(/\\&/g, "\\&")
+        .replace(/\\r/g, "\\r")
+        .replace(/\\t/g, "\\t")
+        .replace(/\\b/g, "\\b")
+        .replace(/\\f/g, "\\f");
+};
+
 var buildTask = function() {
     'use strict';
 
@@ -33,7 +45,7 @@ var buildTask = function() {
                 }
 
                 output.on('data', function(data) {
-                    data = JSON.parse(data);
+                    data = JSON.parse(escapeSpecialChars(data));
                     if (data.stream) {
                         this.report('message', '    | %s: %s', container.name, data.stream.trim());
                     } else if (data.status) {
