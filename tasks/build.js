@@ -1,5 +1,4 @@
-var Promise = require('promise'),
-    tar = require('tar-fs'),
+var tar = require('tar-fs'),
     docker = require('../lib/docker')();
 
 var escapeSpecialChars = function(s) {

@@ -1,6 +1,5 @@
 var docker = require('../lib/docker')(),
     path = require('path'),
-    Promise = require('promise'),
     spawn = require('child_process').spawn;
 
 var detectOrder = function(containers, pocket) {

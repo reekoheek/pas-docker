@@ -1,5 +1,4 @@
-var Promise = require('promise'),
-    docker = require('../lib/docker')();
+var docker = require('../lib/docker')();
 
 var removeTask = module.exports = function() {
     'use strict';
