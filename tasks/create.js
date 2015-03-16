@@ -105,6 +105,16 @@ var createTask = module.exports = function() {
                     opts.Cmd = containerConf.command;
                 }
 
+                if (containerConf.env) {
+                    opts.Env = [];
+
+                    for(var x in containerConf.env) {
+                        var val = containerConf.env[x].replace('"', '\\"');
+
+                        opts.Env.push(x+'='+val);
+                    }
+                }
+
                 if (containerConf.volumesFrom) {
                     var volumesFrom = opts.HostConfig.VolumesFrom = opts.HostConfig.VolumesFrom || [];
                     containerConf.volumesFrom.forEach(function(c) {
