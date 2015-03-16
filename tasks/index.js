@@ -1,9 +1,10 @@
 var fs = require('fs');
 
 module.exports = function() {
-    this.report('data', 'Usage: pas docker[:sub-task] [args..]\n');
+    this.report('data', 'Usage: pas [task] [args..]\n');
 
-    this.report('header', 'Sub Tasks:');
+    this.report('', '');
+    this.report('header', 'Tasks:');
 
     var data = [];
 
@@ -16,8 +17,7 @@ module.exports = function() {
             task = require('./' + splitted[0]);
 
         data.push({
-            _: '',
-            name: splitted[0],
+            name: 'docker:' + splitted[0],
             description: task.description || '.'
         });
     }.bind(this));

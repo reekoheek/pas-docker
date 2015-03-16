@@ -28,7 +28,7 @@ var detectOrder = function(containers, pocket) {
     return retval;
 };
 
-var startTask = module.exports = function() {
+var startTask = module.exports = function(nameToStart) {
     'use strict';
 
     var packageName = docker.packageManifest.name;
@@ -37,12 +37,14 @@ var startTask = module.exports = function() {
 
     this.report('message', '[%s] starting containers (%s)', packageName, orders);
 
-
     return docker.findPackageContainers()
         .then(function(containers) {
             var promise = Promise.resolve();
 
             orders.forEach(function(name) {
+                if (nameToStart && nameToStart !== name) {
+                    return;
+                }
                 var containerConf = docker.manifest.containers[name];
 
                 promise = promise.then(function() {

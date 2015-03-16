@@ -2,7 +2,7 @@ var tar = require('tar-fs'),
     docker = require('../lib/docker')();
 
 var escapeSpecialChars = function(s) {
-    return JSON.stringify(s.toString())
+    return s.toString()
         .replace(/\\n/g, "\\n")
         .replace(/\\'/g, "\\'")
         .replace(/\\"/g, '\\"')

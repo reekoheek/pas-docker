@@ -5,7 +5,10 @@ var upTask = module.exports = function() {
 
     var task = this.require('task');
 
-    return task({_:['docker:create']})
+    return task({_:['docker:stop']})
+        .then(function(containers) {
+            return task({_:['docker:create']});
+        })
         .then(function(containers) {
             return task({_:['docker:start']});
         });

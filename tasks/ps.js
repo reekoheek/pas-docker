@@ -8,8 +8,8 @@ var psTask = module.exports = function() {
     return docker.findPackageContainers()
         .then(function(containers) {
 
-
             containers.forEach(function(container) {
+                this.report('sep', '');
                 var data = {
                     Id: container.info.Id,
                     Name: container.name,
@@ -20,7 +20,6 @@ var psTask = module.exports = function() {
                 this.report('header', '%s: %s', container.manifest.name, container.name);
                 this.report('header', '-----------------------------------');
                 this.report('data', data);
-                this.report('header', '');
             }.bind(this));
         }.bind(this));
 };

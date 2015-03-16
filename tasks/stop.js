@@ -1,6 +1,6 @@
 var docker = require('../lib/docker')();
 
-var stopTask = module.exports = function() {
+var stopTask = module.exports = function(nameToStop) {
     'use strict';
 
     var task = this.require('task');
@@ -14,9 +14,16 @@ var stopTask = module.exports = function() {
 
             containers.forEach(function(container) {
 
+                if (nameToStop && container.manifest.name !== nameToStop) {
+                    return;
+                }
+
                 this.report('message', '    | stopping %s <-> %s', container.manifest.name, container.name);
 
-                var promise = Promise.denodeify(container.stop).bind(container)();
+                var promise = Promise.denodeify(container.stop).bind(container)()
+                    .then(function() {}, function() {
+                        this.report('warning', '    | %s already stopped', container.name);
+                    }.bind(this));
                 promises.push(promise);
 
             }.bind(this));

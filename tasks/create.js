@@ -133,6 +133,7 @@ var createTask = module.exports = function() {
 
                     // FIXME this is ugly hack to include pas home here
                     binds.push(config.home + ':' + config.home);
+                    // console.log(binds);
                 }
 
 

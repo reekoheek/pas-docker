@@ -15,6 +15,12 @@ var topTask = module.exports = function() {
                     .then(function(top) {
                         top.container = container;
                         return top;
+                    }, function(err) {
+                        var top = {
+                            Processes: [],
+                            container: container,
+                        };
+                        return top;
                     });
                 promises.push(promise);
             });
@@ -22,8 +28,8 @@ var topTask = module.exports = function() {
             return Promise.all(promises);
         })
         .then(function(tops) {
-
             tops.forEach(function(top) {
+                this.report('separator', '');
 
                 var data = [];
                 top.Processes.forEach(function(process) {
@@ -36,8 +42,11 @@ var topTask = module.exports = function() {
 
                 this.report('header', '%s: %s', top.container.manifest.name, top.container.name);
                 this.report('header', '-----------------------------------');
-                this.report('data', data);
-                this.report('header', '');
+                if (data.length) {
+                    this.report('data', data);
+                } else {
+                    this.report('empty', '-');
+                }
             }.bind(this));
         }.bind(this), function(err) {
             // noop
