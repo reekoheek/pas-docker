@@ -3,6 +3,10 @@ var docker = require('../lib/docker')();
 var removeTask = module.exports = function() {
     'use strict';
 
+    if (!docker.packageManifest) {
+        return;
+    }
+
     var packageName = docker.packageManifest.name;
 
     this.report('message', '[%s] removing containers', packageName);
