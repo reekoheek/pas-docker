@@ -123,12 +123,17 @@ var createTask = module.exports = function() {
 
                     containerConf.volumes.forEach(function(v) {
                         var splitted = v.split(':');
-                        var origin = path.resolve(splitted[0]);
-                        var destination = splitted.slice(1).join(':');
 
-                        opts.Volumes[destination] = {};
+                        if (splitted.length === 1) {
+                            opts.Volumes[v] = {};
+                        } else {
+                            var origin = path.resolve(splitted[0]);
+                            var destination = splitted.slice(1).join(':');
 
-                        binds.push(origin + ':' + destination);
+                            opts.Volumes[destination] = {};
+
+                            binds.push(origin + ':' + destination);
+                        }
                     });
 
                     // FIXME this is ugly hack to include pas home here
