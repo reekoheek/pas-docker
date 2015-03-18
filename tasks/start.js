@@ -1,5 +1,4 @@
-var docker = require('../lib/docker')();
-
+var docker;
 var detectOrder = function(containers, pocket) {
     'use strict';
 
@@ -30,6 +29,8 @@ var detectOrder = function(containers, pocket) {
 
 var startTask = module.exports = function(nameToStart) {
     'use strict';
+
+    docker = require('../lib/docker').call(this);
 
     var packageName = docker.packageManifest.name;
 

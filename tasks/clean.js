@@ -1,8 +1,10 @@
-var exec = require('child_process').exec,
-    docker = require('../lib/docker')();
+var exec = require('child_process').exec;
+var docker;
 
 var cleanTask = module.exports = function() {
     'use strict';
+
+    docker = require('../lib/docker').call(this);
 
     var task = this.require('task');
     return task({_:['docker:remove']})

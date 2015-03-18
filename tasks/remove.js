@@ -1,7 +1,9 @@
-var docker = require('../lib/docker')();
+var docker;
 
 var removeTask = module.exports = function() {
     'use strict';
+
+    docker = require('../lib/docker').call(this);
 
     if (!docker.packageManifest) {
         return;

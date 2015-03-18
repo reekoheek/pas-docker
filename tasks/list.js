@@ -1,7 +1,9 @@
-var docker = require('../lib/docker')();
+var docker;
 
 var listTask = module.exports = function() {
     'use strict';
+
+    docker = require('../lib/docker').call(this);
 
     Object.keys(docker.manifest.containers).forEach(function(name) {
         var container = docker.manifest.containers[name];

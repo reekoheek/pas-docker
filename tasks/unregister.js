@@ -1,9 +1,12 @@
-var docker = require('../lib/docker')(),
-    path = require('path'),
+var path = require('path'),
     fs = require('fs');
+
+var docker;
 
 var unregisterTask = module.exports = function(name) {
     'use strict';
+
+    docker = require('../lib/docker').call(this);
 
     var config = this.require('config')(),
         rm = this.require('fsutil').rm;

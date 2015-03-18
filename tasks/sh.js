@@ -1,8 +1,10 @@
-var spawn = require('child_process').spawn,
-    docker = require('../lib/docker')();
+var spawn = require('child_process').spawn;
+var docker;
 
 var shTask = module.exports = function(name) {
     'use strict';
+
+    docker = require('../lib/docker').call(this);
 
     var containerManifest = docker.manifest.containers[name];
 

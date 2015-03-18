@@ -1,6 +1,5 @@
-var tar = require('tar-fs'),
-    docker = require('../lib/docker')();
-
+var tar = require('tar-fs');
+var docker;
 var escapeSpecialChars = function(s) {
     return s.toString()
         .replace(/\\n/g, "\\n")
@@ -16,6 +15,8 @@ var escapeSpecialChars = function(s) {
 var buildTask = function() {
     'use strict';
 
+    docker = require('../lib/docker').call(this);
+
     var images = [];
 
     var packageName = docker.packageManifest.name;
@@ -26,7 +27,6 @@ var buildTask = function() {
         var container = docker.manifest.containers[name];
 
         images.push(new Promise(function(resolve, reject) {
-
             if (container.image) {
                 // this.report('message', '[%s] doesn\'t need to build "%s"', packageName, container.name);
                 return resolve(container);

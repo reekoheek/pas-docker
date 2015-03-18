@@ -1,6 +1,7 @@
-var docker = require('../lib/docker')(),
-    path = require('path'),
+var path = require('path'),
     spawn = require('child_process').spawn;
+
+var docker;
 
 var detectOrder = function(containers, pocket) {
     'use strict';
@@ -35,6 +36,8 @@ var createTask = module.exports = function() {
 
     var task = this.require('task');
     var config = this.require('config')();
+
+    docker = require('../lib/docker').call(this);
 
     return task({_:['docker:build']})
         .then(function() {

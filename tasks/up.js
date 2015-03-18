@@ -1,7 +1,9 @@
-var docker = require('../lib/docker')();
+var docker;
 
 var upTask = module.exports = function() {
     'use strict';
+
+    docker = require('../lib/docker').call(this);
 
     var task = this.require('task');
 

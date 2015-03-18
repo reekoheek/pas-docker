@@ -1,7 +1,8 @@
-var docker = require('../lib/docker')();
-
+var docker;
 var logsTask = module.exports = function() {
     'use strict';
+
+    docker = require('../lib/docker').call(this);
 
     var name = this.args.length ? this.args[0] : null;
     return docker.findPackageContainers(name)

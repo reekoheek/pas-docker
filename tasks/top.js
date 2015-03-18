@@ -1,9 +1,11 @@
-var docker = require('../lib/docker')();
+var docker;
 
 var topTask = module.exports = function() {
     'use strict';
 
     var task = this.require('task');
+
+    docker = require('../lib/docker').call(this);
 
     return docker.findPackageContainers()
         .then(function(containers) {
