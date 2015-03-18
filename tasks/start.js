@@ -54,7 +54,10 @@ var startTask = module.exports = function(nameToStart) {
                     var opts = {
                         HostConfig: {
                             Links: [],
-                            PortBindings: {}
+                            PortBindings: {},
+                            RestartPolicy: {
+                                Name: "always"
+                            }
                         }
                     };
 

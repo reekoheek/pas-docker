@@ -100,7 +100,10 @@ var createTask = module.exports = function() {
                     Volumes: {},
                     HostConfig: {
                         VolumesFrom: [],
-                        Binds: []
+                        Binds: [],
+                        RestartPolicy: {
+                            Name: "always"
+                        }
                     }
                 };
 
