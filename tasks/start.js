@@ -56,7 +56,7 @@ var startTask = module.exports = function(nameToStart) {
                             Links: [],
                             PortBindings: {},
                             RestartPolicy: {
-                                Name: "always"
+                                Name: 'always'
                             }
                         }
                     };
