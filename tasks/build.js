@@ -1,4 +1,5 @@
-var tar = require('tar-fs');
+var tar = require('tar-fs'),
+    fs = require('fs');
 var docker;
 var escapeSpecialChars = function(s) {
     return s.toString()
@@ -32,13 +33,22 @@ var buildTask = function() {
                 return resolve(container);
             }
 
+            if (!fs.existsSync(container.baseDir)) {
+                throw new Error('Container "' + name + '" base directory not found');
+            }
+
             this.report('message', '    | %s: building %s', container.name, container.imageName);
 
             var tarStream = tar.pack(container.baseDir);
+            var buildOpts = {
+                t: container.imageName,
+            };
 
-            docker.buildImage(tarStream, {
-                t: container.imageName
-            }, function(error, output) {
+            if (this.opts.cache === false) {
+                buildOpts.nocache = true;
+            }
+
+            docker.buildImage(tarStream, buildOpts, function(error, output) {
                 if (error) {
                     return reject(error);
                 }
