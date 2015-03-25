@@ -38,7 +38,6 @@ var createTask = module.exports = function() {
     var config = this.require('config')();
 
     docker = require('../lib/docker').call(this);
-
     return task({_:['docker:build']})
         .then(function() {
             return task({_:['docker:remove']});
@@ -104,20 +103,32 @@ var createTask = module.exports = function() {
                         RestartPolicy: {
                             Name: "always"
                         }
-                    }
+                    },
+                    Env: []
                 };
 
                 if (containerConf.command) {
                     opts.Cmd = containerConf.command;
                 }
 
+                opts.Env.push('PAS_ENV=' + (process.env.PAS_ENV || 'development'));
+                opts.Env.push('PAS_PLATFORM=' + process.platform);
+                opts.Env.push('PAS_ARCH=' + process.arch);
+                opts.Env.push('PAS_PLATFORM_ARCH=' + process.platform + '_' + process.arch);
+
                 if (containerConf.env) {
-                    opts.Env = [];
 
-                    for(var x in containerConf.env) {
-                        var val = containerConf.env[x].replace('"', '\\"');
 
-                        opts.Env.push(x+'='+val);
+                    if (Array.isArray(containerConf.env)) {
+                        containerConf.env.forEach(function(envLine) {
+                            opts.Env.push(envLine);
+                        });
+                    } else {
+                        for(var x in containerConf.env) {
+                            var val = containerConf.env[x].replace('"', '\\"');
+
+                            opts.Env.push(x+'='+val);
+                        }
                     }
                 }
 
