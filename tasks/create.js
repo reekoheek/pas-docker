@@ -38,10 +38,10 @@ var createTask = module.exports = function() {
     var config = this.require('config')();
 
     docker = require('../lib/docker').call(this);
-    return task({_:['docker:build']})
+    return task.run('docker:build', this.opts)
         .then(function() {
-            return task({_:['docker:remove']});
-        })
+            return task.run('docker:remove', this.opts);
+        }.bind(this))
         .then(function() {
             var packageName = docker.packageManifest.name;
             this.report('message', '[%s] pulling required images', packageName);
@@ -164,8 +164,8 @@ var createTask = module.exports = function() {
                     });
 
                     // FIXME this is ugly hack to include pas home here
-                    binds.push(config.home + ':' + config.home);
-                    // console.log(binds);
+                    binds.push(process.env.HOME + ':' + process.env.HOME);
+                    // console.log('>>>', config, process.env.HOME + ':' + process.env.HOME);
                 }
 
 

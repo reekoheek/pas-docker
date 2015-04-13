@@ -7,13 +7,13 @@ var upTask = module.exports = function() {
 
     var task = this.require('task');
 
-    return task({_:['docker:stop']})
+    return task.run('docker:stop', this.opts)
         .then(function(containers) {
-            return task({_:['docker:create']});
-        })
+            return task.run('docker:create', this.opts);
+        }.bind(this))
         .then(function(containers) {
-            return task({_:['docker:start']});
-        })
+            return task.run('docker:start', this.opts);
+        }.bind(this))
         .then(function() {
             return docker.findPackageContainers()
                 .then(function(containers) {

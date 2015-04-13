@@ -3,14 +3,13 @@ var tar = require('tar-fs'),
 var docker;
 var escapeSpecialChars = function(s) {
     return s.toString()
-        .replace(/\\n/g, "\\n")
-        .replace(/\\'/g, "\\'")
-        .replace(/\\"/g, '\\"')
-        .replace(/\\&/g, "\\&")
-        .replace(/\\r/g, "\\r")
-        .replace(/\\t/g, "\\t")
-        .replace(/\\b/g, "\\b")
-        .replace(/\\f/g, "\\f");
+        .replace(/\\n/g, ' ');
+        // .replace(/\\'/g, '\\'')
+        // .replace(/\\&/g, '\\&')
+        // .replace(/\\r/g, '\\r')
+        // .replace(/\\t/g, '\\t')
+        // .replace(/\\b/g, '\\b')
+        // .replace(/\\f/g, '\\f');
 };
 
 var buildTask = function() {

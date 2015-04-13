@@ -7,7 +7,7 @@ var cleanTask = module.exports = function() {
     docker = require('../lib/docker').call(this);
 
     var task = this.require('task');
-    return task({_:['docker:remove']})
+    return task.run('docker:remove', this.opts)
         .then(function() {
 
             var imageNames = [];

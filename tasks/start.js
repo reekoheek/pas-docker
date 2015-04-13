@@ -52,6 +52,7 @@ var startTask = module.exports = function(nameToStart) {
                     var promises = [];
 
                     var opts = {
+                        // ExposedPorts: {},
                         HostConfig: {
                             Links: [],
                             PortBindings: {},
@@ -99,7 +100,10 @@ var startTask = module.exports = function(nameToStart) {
                                 opts.HostConfig.PortBindings[key].push({
                                     HostPort: pd.host
                                 });
+
+                                // opts.ExposedPorts[key] = {};
                             });
+
                         }
                     }
 
