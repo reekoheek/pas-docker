@@ -53,11 +53,15 @@ var buildTask = function() {
                 }
 
                 output.on('data', function(data) {
-                    data = JSON.parse(escapeSpecialChars(data));
-                    if (data.stream) {
-                        this.report('message', '    | %s: %s', container.name, data.stream.trim());
-                    } else if (data.status) {
-                        this.report('message', '    | %s: %s', container.name, data.status.trim());
+                    try {
+                        data = JSON.parse(escapeSpecialChars(data));
+                        if (data.stream) {
+                            this.report('message', '    | %s: %s', container.name, data.stream.trim());
+                        } else if (data.status) {
+                            this.report('message', '    | %s: %s', container.name, data.status.trim());
+                        }
+                    } catch(e) {
+                        this.report('log', '    | %s: "%s"', container.name, data);
                     }
                 }.bind(this));
 
