@@ -40,6 +40,10 @@ var startTask = module.exports = function(name) {
             }
 
             return pack.profile.dockerStart(pack, options);
+        }.bind(this))
+        .then(function() {
+            this.i('raw', '');
+            return this.task('docker:ps').run();
         }.bind(this));
 };
 

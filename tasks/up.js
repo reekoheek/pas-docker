@@ -44,6 +44,7 @@ var upTask = module.exports = function() {
             return pack.profile.dockerStart(pack, this.option());
         }.bind(this))
         .then(function() {
+            this.i('raw', '');
             return this.task('docker:ps').run();
         }.bind(this));
 };
