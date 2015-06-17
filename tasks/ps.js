@@ -1,26 +1,44 @@
-var docker;
+/**
+ * Copyright (c) 2015 Xinix Technology
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+
 var psTask = module.exports = function() {
     'use strict';
 
-    docker = require('../lib/docker').call(this);
+    var pad = this.require('util/string').pad;
 
-    var task = this.require('task');
+    var pack = this.query();
 
-    return docker.findPackageContainers()
+    return pack.fetch()
+        .then(function() {
+            return pack.profile.dockerList(pack, this.option());
+        }.bind(this))
         .then(function(containers) {
-
+            this.i('raw', '%s %s %s', pad('Name', 10), pad('Id', 12), pad('State', 5));
             containers.forEach(function(container) {
-                this.report('sep', '');
-                var data = {
-                    Id: container.info.Id,
-                    Name: container.name,
-                    Command: container.info.Command,
-                    Image: container.info.Image,
-                    Status: container.info.Status,
-                };
-                this.report('header', '%s: %s', container.manifest.name, container.name);
-                this.report('header', '-----------------------------------');
-                this.report('data', data);
+                this.i('raw', '%s %s %s',
+                    pad(container.name + '-' + 0, 10),
+                    container.remoteData ? container.remoteData.Id.substr(0, 12) : '',
+                    container.remoteData ? pad(container.remoteData.State.Running + '', 5) : ''
+                );
             }.bind(this));
         }.bind(this));
 };

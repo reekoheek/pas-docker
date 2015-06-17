@@ -1,39 +1,37 @@
-var docker;
-var logsTask = module.exports = function() {
+/**
+ * Copyright (c) 2015 Xinix Technology
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+
+var logsTask = module.exports = function(name) {
     'use strict';
 
-    docker = require('../lib/docker').call(this);
+    var pack = this.query();
 
-    var name = this.args.length ? this.args[0] : null;
-    return docker.findPackageContainers(name)
-        .then(function(containers) {
-            return new Promise(function(resolve, reject) {
-                containers.forEach(function(container) {
-                    var opts = {
-                        follow: true,
-                        stdout: true,
-                        stderr: true,
-                        // timestamps: true
-                    };
-                    container.logs(opts, function(err, stream) {
-                        if (err) {
-                            return reject(err);
-                        }
-                        stream.on('data', function(data) {
-                            var d = data.toString('utf8').trim();
-                            if (d.length === 8) return;
-                            this.report('message', '%s-%s | %s',
-                                container.manifest.name,
-                                container.name.substr(container.manifest.prefixName.length),
-                                d);
-                        }.bind(this));
-
-                        stream.on('end', function() {
-                            console.log('{{end of stream}}');
-                        });
-                    }.bind(this));
-                }.bind(this));
-            }.bind(this));
+    return pack.fetch()
+        .then(function() {
+            var options = this.option() || {};
+            if (name) {
+                options.containerName = name;
+            }
+            pack.profile.dockerLogs(pack, options);
         }.bind(this));
 };
 

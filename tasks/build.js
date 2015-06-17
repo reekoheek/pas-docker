@@ -1,84 +1,44 @@
-var tar = require('tar-fs'),
-    fs = require('fs');
-var docker;
-var escapeSpecialChars = function(s) {
-    return s.toString()
-        .replace(/\\n/g, ' ');
-        // .replace(/\\'/g, '\\'')
-        // .replace(/\\&/g, '\\&')
-        // .replace(/\\r/g, '\\r')
-        // .replace(/\\t/g, '\\t')
-        // .replace(/\\b/g, '\\b')
-        // .replace(/\\f/g, '\\f');
-};
+/**
+ * Copyright (c) 2015 Xinix Technology
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
 
-var buildTask = function() {
+var buildTask = module.exports = function(name) {
     'use strict';
 
-    docker = require('../lib/docker').call(this);
+    var pack = this.query();
 
-    var images = [];
+    return pack.fetch()
+        .then(function() {
+            this.i('t/build', 'Building images for %s %s', pack.name, name || '(all)');
 
-    var packageName = docker.packageManifest.name;
-
-    this.report('message', '[%s] building images', packageName);
-
-    Object.keys(docker.manifest.containers).forEach(function(name) {
-        var container = docker.manifest.containers[name];
-
-        images.push(new Promise(function(resolve, reject) {
-            if (container.image) {
-                // this.report('message', '[%s] doesn\'t need to build "%s"', packageName, container.name);
-                return resolve(container);
+            if (pack.profile.name !== 'docker') {
+                throw new Error('Cannot build non docker pack');
             }
 
-            if (!fs.existsSync(container.baseDir)) {
-                throw new Error('Container "' + name + '" base directory not found');
+            var options = this.option() || {};
+            if (name) {
+                options.containerName = name;
             }
-
-            this.report('message', '    | %s: building %s', container.name, container.imageName);
-
-            var tarStream = tar.pack(container.baseDir);
-            var buildOpts = {
-                t: container.imageName,
-            };
-
-            if (this.opts.cache === false) {
-                buildOpts.nocache = true;
-            }
-
-            docker.buildImage(tarStream, buildOpts, function(error, output) {
-                if (error) {
-                    return reject(error);
-                }
-
-                output.on('data', function(data) {
-                    try {
-                        data = JSON.parse(escapeSpecialChars(data));
-                        if (data.stream) {
-                            this.report('message', '    | %s: %s', container.name, data.stream.trim());
-                        } else if (data.status) {
-                            this.report('message', '    | %s: %s', container.name, data.status.trim());
-                        }
-                    } catch(e) {
-                        this.report('log', '    | %s: "%s"', container.name, data);
-                    }
-                }.bind(this));
-
-                output.on('end', function() {
-                    resolve(container);
-                });
-
-                output.on('error', function(err) {
-                    reject(err);
-                });
-            }.bind(this));
-        }.bind(this)));
-    }.bind(this));
-
-    return Promise.all(images);
+            return pack.profile.dockerBuild(pack, options);
+        }.bind(this));
 };
 
 buildTask.description = 'Build package images';
-
-module.exports = buildTask;

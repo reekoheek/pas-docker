@@ -1,36 +1,44 @@
-var docker;
+/**
+ * Copyright (c) 2015 Xinix Technology
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
 
-var stopTask = module.exports = function(nameToStop) {
+var stopTask = module.exports = function(name) {
     'use strict';
 
-    var task = this.require('task');
+    var pack = this.query();
 
-    docker = require('../lib/docker').call(this);
+    var options = this.option() || {};
+    if (name) {
+        options.containerName = name;
+    }
 
-    return docker.findPackageContainers()
-        .then(function(containers) {
+    return pack.fetch()
+        .then(function() {
+            this.i('t/stop', 'Stopping containers for %s %s', pack.name, name || '(all)');
 
-            this.report('message', '[%s] stopping containers', docker.packageManifest.name);
+            if (pack.profile.name !== 'docker') {
+                throw new Error('Cannot build non docker pack');
+            }
 
-            var promises = [];
-
-            containers.forEach(function(container) {
-
-                if (nameToStop && container.manifest.name !== nameToStop) {
-                    return;
-                }
-
-                this.report('message', '    | stopping %s <-> %s', container.manifest.name, container.name);
-
-                var promise = Promise.denodeify(container.stop).bind(container)()
-                    .then(function() {}, function() {
-                        this.report('warning', '    | %s already stopped', container.name);
-                    }.bind(this));
-                promises.push(promise);
-
-            }.bind(this));
-
-            return Promise.all(promises);
+            return pack.profile.dockerStop(pack, options);
         }.bind(this));
 };
 

@@ -1,43 +1,43 @@
-var exec = require('child_process').exec;
-var docker;
+/**
+ * Copyright (c) 2015 Xinix Technology
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
 
 var cleanTask = module.exports = function() {
     'use strict';
 
-    docker = require('../lib/docker').call(this);
+    var pack = this.query();
 
-    var task = this.require('task');
-    return task.run('docker:remove', this.opts)
+    return pack.fetch()
         .then(function() {
+            this.i('t/docker', 'Cleaning abandoned images for %s', pack.name);
 
-            var imageNames = [];
-            Object.keys(docker.manifest.containers).forEach(function(name) {
-                var container = docker.manifest.containers[name];
-                if (container.imageName.indexOf(docker.packageManifest.name) === 0) {
-                    imageNames.push(container.imageName);
-                }
-            });
-
-            var execPromise = Promise.denodeify(exec);
-
-            var promise;
-
-            if (imageNames.length > 0) {
-                promise = execPromise('docker rmi -f --no-prune ' + imageNames.join(' ') + ' 2> /dev/null');
-            } else {
-                promise = Promise.resolve();
+            if (pack.profile.name !== 'docker') {
+                throw new Error('Cannot build non docker pack');
             }
 
-            return promise
-                .then(function() {}, function() {})
-                .then(function() {
-                    return execPromise('docker rmi -f --no-prune `docker images -a | grep "<none>" | tr -s "[:space:]" | cut -d" " -f3` 2> /dev/null');
-                })
-                .then(function() {
-                    this.report('message', 'Abandoned images deleted successfully.');
-                }.bind(this), function() {
-                    this.report('message', 'Abandoned images deleted.');
-                }.bind(this));
-        }.bind(this));
-
+            return pack.profile.dockerStop(pack, { f: true });
+        }.bind(this))
+        .then(function() {
+            return pack.profile.dockerClean(pack);
+        });
 };
+
+cleanTask.description = 'Clean abandoned images';

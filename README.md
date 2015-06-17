@@ -6,37 +6,33 @@ Pas Docker Plugin
 
 Build package images
 
+Usage: pas docker:build [<CONTAINER_NAME>]
+
 ## docker:clean       
 
-.
+Clean abandoned images
 
 ## docker:create      
 
 Create package containers
 
-## docker:list        
-
-.
-
 ## docker:logs        
 
 Show logs stream of container
 
-## docker:ps          
+Usage: pas docker:logs [<CONTAINER_NAME>]
+
+## docker:ps
 
 Show all container processes
 
-## docker:register    
-
-.
-
-## docker:remove      
-
-Remove all package containers
+Usage: pas docker:ps
 
 ## docker:sh          
 
-.
+Run shell of container
+
+Usage: pas docker:sh <CONTAINER_NAME>
 
 ## docker:start       
 
