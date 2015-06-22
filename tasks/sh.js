@@ -23,7 +23,7 @@
 var shTask = module.exports = function(name, command) {
     'use strict';
 
-    command = command || 'sh';
+    command = command || 'bash';
 
     if (!name) {
         throw new Error('Usage: pas docker:sh <CONTAINER_NAME> [<COMMAND>]');
